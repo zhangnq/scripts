@@ -1,0 +1,83 @@
+#!/bin/bash
+#
+# chkconfig: 2345 85 15
+# description: Starts and stops the PostgreSQL database server
+
+# Source function library.
+if [ -f /etc/rc.d/functions ];
+then
+    . /etc/init.d/functions
+fi
+
+source /etc/profile
+
+# PostgreSQL Service script for Linux
+
+start()
+{
+        echo $"Starting PostgreSQL: "
+        su - postgres -c "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH $PGHOME/bin/pg_ctl -w start -D \"$PGDATA\" -l \"$PGDATA/pg_log/startup.log\""
+
+        if [ $? -eq 0 ];
+        then
+                echo "PostgreSQL started successfully"
+                exit 0
+        else
+                echo "PostgreSQL did not start in a timely fashion, please see $PGDATA/pg_log/startup.log for details"
+                exit 1
+        fi
+}
+
+stop()
+{
+        echo $"Stopping PostgreSQL: "
+        su - postgres -c "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH $PGHOME/bin/pg_ctl stop -m fast -w -D \"$PGDATA\""
+}
+
+restart()
+{
+        echo $"Restarting PostgreSQL: "
+        su - postgres -c "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH $PGHOME/bin/pg_ctl -w restart -D \"$PGDATA\" -l \"$PGDATA/pg_log/startup.log\" -m fast"
+
+        if [ $? -eq 0 ];
+        then
+                echo "PostgreSQL restarted successfully"
+                exit 0
+        else
+                echo "PostgreSQL did not start in a timely fashion, please see $PGDATA/pg_log/startup.log for details"
+                exit 1
+        fi
+}
+
+reload()
+{
+        echo $"Reloading PostgreSQL: "
+        su - postgres -c "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH $PGHOME/bin/pg_ctl reload -D \"$PGDATA\""
+}
+
+# See how we were called.
+case "$1" in
+  start)
+        start
+        ;;
+  stop)
+        stop
+        ;;
+  restart)
+        restart
+        ;;
+  reload)
+        reload
+        ;;
+  condrestart)
+        if [ -f "$PGDATA/postmaster.pid" ]; then
+            restart
+        fi
+        ;;
+  status)
+        su - postgres -c "LD_LIBRARY_PATH=$PGHOME/lib:$LD_LIBRARY_PATH $PGHOME/bin/pg_ctl status -D \"$PGDATA\""
+        ;;
+  *)
+        echo $"Usage: $PGHOME/installer/server/startupcfg.sh {start|stop|restart|condrestart|status}"
+        exit 1
+esac

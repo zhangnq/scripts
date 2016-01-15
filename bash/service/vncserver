@@ -1,0 +1,43 @@
+#!/bin/bash
+
+### BEGIN INIT INFO
+# Provides: vncserver
+# Required-Start: $remote_fs $syslog
+# Required-Stop: $remote_fs $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start daemon at boot time
+# Description: Enable service provided by daemon.
+### END INIT INFO
+
+PATH="$PATH:/usr/X11R6/bin/"
+# The Username:Group that will run VNC
+export USER="root"
+#${RUNAS}
+
+# The display that VNC will use
+DISPLAY="1"
+# Color depth (between 8 and 32)
+DEPTH="16"
+# The Desktop geometry to use.
+#GEOMETRY="x"
+GEOMETRY="1280x800"
+#You Can Choice GEOMETRY="1024x768" && GEOMETRY="1280x1024"
+# The name that the VNC Desktop will have.
+NAME="Vncserver"
+OPTIONS="-name ${NAME} -depth ${DEPTH} -geometry ${GEOMETRY} :${DISPLAY}"
+. /lib/lsb/init-functions
+
+case "$1" in
+start)
+    su ${USER} -c "/usr/bin/vncserver ${OPTIONS}"
+;;
+stop)
+    su ${USER} -c "/usr/bin/vncserver -kill :${DISPLAY}"
+;;
+restart)
+    $0 stop
+    $0 start
+;;
+esac
+exit 0

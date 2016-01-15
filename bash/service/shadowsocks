@@ -1,0 +1,38 @@
+#!/bin/bash
+#
+# /etc/rc.d/init.d/shadowsocks
+# init script for shadowsocks
+#
+# processname: shadowsocks
+# description: shadowsocks
+# chkconfig: 2345 86 16
+# description:  Start up the shadowsocks engine.
+
+export PATH="$PATH:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin"
+
+RETVAL=$?
+
+case "$1" in
+start)
+        cnt=`ps -ef|grep ssserver |grep -v grep |wc -l`
+        if [ $cnt -ne 0 ];then
+                echo "Shadowsocks is started!"
+                exit 1
+        fi
+        `/usr/bin/which ssserver` -c /etc/shadowsocks/shadowsocks.json -d start
+        ;;
+stop)
+        `/usr/bin/which ssserver` -c /etc/shadowsocks/shadowsocks.json -d stop
+        ;;
+restart)
+        $0 stop
+	sleep 5
+        $0 start
+        ;;
+*)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit $RETVAL

@@ -1,0 +1,57 @@
+#!/bin/bash
+#
+# /etc/rc.d/init.d/tomcat7
+# init script for tomcat precesses
+#
+# processname: tomcat
+# description: tomcat is a j2se server
+# chkconfig: 2345 86 16
+# description:  Start up the Tomcat servlet engine.
+
+RETVAL=$?
+CATALINA_HOME="/usr/local/tomcat7"
+
+case "$1" in
+start)
+        cnt=`ps -ef|grep $CATALINA_HOME |grep -v grep |wc -l`
+        if [ $cnt -ne 0 ];then
+                echo "Tomcat is started!"
+                exit 1
+        fi
+        if [ -f $CATALINA_HOME/bin/startup.sh ];
+          then
+            echo $"###Starting Tomcat###"
+            mv $CATALINA_HOME/logs/catalina.out $CATALINA_HOME/logs/catalina.out.`date "+%Y%m%d%H%M%S"`
+            su - tomcat -c "$CATALINA_HOME/bin/startup.sh"
+        fi
+        ;;
+stop)
+	s=`grep 'Server startup in .* ms' $CATALINA_HOME/logs/catalina.out |grep -v grep |wc -l`
+	if [ $s -ne 0 ];then
+		if [ -f $CATALINA_HOME/bin/shutdown.sh ];then
+            		echo $"###Stopping Tomcat###"
+            		su - tomcat -c "$CATALINA_HOME/bin/shutdown.sh"
+        	fi
+                pid=`ps -ef|grep $CATALINA_HOME |grep -v grep |awk '{print $2}'`
+                if [ "$pid" != "" ];then
+                        kill -9 $pid
+                fi
+	else
+		pid=`ps -ef|grep $CATALINA_HOME |grep -v grep |awk '{print $2}'`
+        	kill -9 $pid
+		echo $"###Stopping Tomcat###"
+        	echo "tomcat is killed!"
+	fi
+        ;;
+restart)
+        $0 stop
+	sleep 5
+        $0 start
+        ;;
+*)
+        echo $"Usage: $0 {start|stop|restart}"
+        exit 1
+        ;;
+esac
+
+exit $RETVAL
