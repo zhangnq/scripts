@@ -45,5 +45,5 @@ service iptables restart
 iptables -t filter -L -n
 
 #denyhost
-wget http://download.chekiang.info/gongju/denyhosts.sh
-bash denyhosts.sh
+wget https://raw.githubusercontent.com/zhangnq/scripts/master/bash/denyhost/setup.sh
+bash setup.sh
