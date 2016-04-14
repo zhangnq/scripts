@@ -58,9 +58,24 @@ chmod u+x /etc/init.d/obsshd
 cat >/etc/init.d/obsshd <<EOF
 #!/bin/bash
 
-# obfuscated ssh service script by halida
-# USAGE: start|stop|restart
+# chkconfig: 2345 85 25
+# Description:       SSH is a protocol for secure remote shell access.
+#                     This service starts up the OpenSSH server daemon.
 #
+# processname: obsshd
+
+### BEGIN INIT INFO
+# Provides: obsshd
+# Required-Start: $local_fs $network $syslog
+# Required-Stop: $local_fs $syslog
+# Should-Start: $syslog
+# Should-Stop: $network $syslog
+# Default-Start: 2 3 4 5
+# Default-Stop: 0 1 6
+# Short-Description: Start up the obfuscated OpenSSH server daemon
+# Description:       SSH is a protocol for secure remote shell access.
+#                    This service starts up the OpenSSH server daemon.
+### END INIT INFO
 
 export SSH_HOME=${obpath}
 
