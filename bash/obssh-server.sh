@@ -36,6 +36,8 @@ ObfuscateKeyword ${obkey}
 Port 2201
 Protocol 2
 
+PermitRootLogin no
+
 HostKey ${obpath}/ssh_host_rsa_key
 
 RSAAuthentication yes
