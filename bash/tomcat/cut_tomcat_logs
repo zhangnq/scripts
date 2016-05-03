@@ -1,0 +1,20 @@
+#!/bin/bash
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+left=`ps -ef|grep "java"|grep -v grep|sed "s/.*Dcatalina.base=\(.*\) -Dcatalina.home.*/\1/g"|awk '{print $1}'`
+
+for path in $left
+do
+    if [ ! -d $path ];then
+        echo `date` "$path is not directory" >>/var/log/tomcat_logs.log 2>&1
+    else
+        find $path/logs/* -mtime +6 -exec rm -f {} \;
+
+        echo `date` "start to split the $path log." >>/var/log/tomcat_logs.log 2>&1
+        date=`date +"%Y%m%d%H%M%S"`
+        cp $path/logs/catalina.out $path/logs/catalina.out.$date
+        echo '' >$path/logs/catalina.out
+        echo "Spliting the tomcat $path completed!" >>/var/log/tomcat_logs.log 2>&1
+    fi
+done
