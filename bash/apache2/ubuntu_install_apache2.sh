@@ -8,6 +8,9 @@ PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin:~/bin
 export PATH
 
 host='http://download.chekiang.info'
+wwwroot='/home/wwwroot'
+www_default='/home/wwwroot/default'
+log_dir='/var/log/apache2'
 
 rm -rf /usr/local/apache2
 
@@ -70,6 +73,11 @@ sleep 5
 groupadd www
 useradd -s /bin/bash -g www www
 
+mkdir -pv $www_default
+mkdir -pv $log_dir
+chown www:www $wwwroot
+chown www:www $log_dir
+
 cp -a /usr/local/apache2/bin/apachectl /etc/init.d/
 mv /etc/init.d/apachectl /etc/init.d/apache2
 sed -i '2i# chkconfig: 35 70 30\n# description: Apache2' /etc/init.d/apache2
@@ -85,14 +93,19 @@ mv /usr/local/apache2/conf/extra/httpd-vhosts.conf /usr/local/apache2/conf/extra
 cat > /usr/local/apache2/conf/extra/httpd-vhosts.conf<<EOF
 NameVirtualHost *:80
 <VirtualHost *:80>
-    ServerAdmin webmaster@dummy-host.example.com
-    DocumentRoot "/usr/local/apache2/htdocs/"
+    ServerAdmin admin@domain.com
+    DocumentRoot "$www_default"
     ServerName www.domain.com
     <IfModule dir_module>
-	DirectoryIndex index.html index.php
+        DirectoryIndex index.html index.php
     </IfModule>
 
-    <Directory "/usr/local/apache2/htdocs/">
+    #首页重定向规则
+    #RewriteEngine on
+    #RewriteCond %{REQUEST_URI} ^/$
+    #RewriteRule ^/$ /login/ [R=permanent,L]
+
+    <Directory "$www_default">
         Options FollowSymLinks
         AllowOverride None
         Order allow,deny
@@ -123,14 +136,50 @@ NameVirtualHost *:80
         SetEnvIfNoCase Request_URI .(?:pdf|doc)$ no-gzip dont-vary
     </ifmodule>
 
+    #不代理upload路径
     #ProxyPass /upload !
+    #访问/upload路径不提示403禁止错误，提示404不存在。
+    #RedirectMatch 404 ^/upload/$
+    
+    #反向代理ajp 8009的应用，一般是tomcat。
     #ProxyPass / ajp://localhost:8009/
     #ProxyPassReverse / ajp://localhost:8009/
+    
+    #tomcat主备、负载均衡配置例子 开始
+    #ProxyRequests off
+    #Header add Set-Cookie "ROUTEID=.%{BALANCER_WORKER_ROUTE}e; path=/" env=BALANCER_ROUTE_CHANGED
+    #<Proxy balancer://www.sijitao.net>
+    #    BalancerMember ajp://192.168.0.10:8009 route=node1
+    #    BalancerMember ajp://192.168.0.11:8009 route=node2 status=+H
+    #    ProxySet stickysession=JSESSIONID
+    #    ProxySet stickysession=ROUTEID
+    #    byrequests(default),bytraffic,bybusyness
+    #    ProxySet lbmethod=bytraffic
+    #    ProxySet nofailover=On
+    #</Proxy>
+    #不代理balancer目录
+    #ProxyPass /balancer !
+    #ProxyPass / balancer://www.sijitao.net/
+    #ProxyPassReverse / balancer://www.sijitao.net/
+    #balancer目录，查看节点状态
+    #<Location /balancer>
+    #    SetHandler balancer-manager
+    #    Proxypass !
+    #    Order allow,deny
+    #    Allow from all
+    #</Location>
+    #<Proxy *>
+    #    Order allow,deny
+    #    Allow from all
+    #</Proxy>
+    #tomcat主备、负载均衡配置例子 结束
 
-    ErrorLog "/tmp/www.domain.com-error_log"
-    CustomLog "/tmp/www.domain.com-access_log" common
+    ErrorLog "$log_dir/www.domain.com-error_log"
+    CustomLog "$log_dir/www.domain.com-access_log" common
 </VirtualHost>
 EOF
+
+rm -rf /etc/httpd
 ln -s /usr/local/apache2/conf /etc/httpd
 mkdir -p /etc/httpd/conf.d
 cat >>/usr/local/apache2/conf/httpd.conf <<EOF
