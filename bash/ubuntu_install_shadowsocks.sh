@@ -12,7 +12,7 @@ cat > /etc/shadowsocks/config.json<<EOF
     "server_port":443,
     "local_address": "127.0.0.1",
     "local_port":7070,
-    "password":"PaSsw0rlD,$@*gDp",
+    "password":"passw0rd",
     "timeout":300,
     "method":"aes-256-cfb",
     "fast_open":false,
