@@ -16,6 +16,11 @@ wget http://download.redis.io/releases/redis-3.2.3.tar.gz
 tar zxvf redis-3.2.3.tar.gz
 cd redis-3.2.3/
 make
+if [ $? -ne 0 ];then
+    echo "Make redis source error."
+    exit 1
+fi
+
 #add redis user group
 groupadd redis
 useradd -g redis redis
