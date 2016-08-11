@@ -28,6 +28,7 @@ chown -R redis:redis /usr/local/redis
 #copy files
 cd src
 cp redis-benchmark redis-check-aof redis-cli redis-server /usr/local/redis/bin
+cd ..
 cp redis.conf /usr/local/redis/conf
 
 cat >>/etc/profile<<eof
@@ -49,5 +50,7 @@ sed -i '/.*exit 0.*/i\echo never > /sys/kernel/mm/transparent_hugepage/enabled' 
 wget https://raw.githubusercontent.com/zhangnq/scripts/master/bash/service/redis-server -O /etc/init.d/redis-server
 chmod +x /etc/init.d/redis-server
 update-rc.d redis-server defaults
+
 #end
+/etc/init.d/redis-server start
 ps -ef|grep redis
