@@ -102,6 +102,9 @@ sed -i "s/tomcat7/$project/" /etc/init.d/$project
 chmod +x /etc/init.d/$project
 update-rc.d $project defaults
 
+wget https://raw.githubusercontent.com/zhangnq/scripts/master/bash/tomcat/cut_tomcat_logs -O /etc/cron.daily/cut_tomcat_logs
+chmod +x /etc/cron.daily/cut_tomcat_logs
+
 echo "============================start================================="
 
 sleep 5
