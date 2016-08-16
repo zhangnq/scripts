@@ -2,7 +2,9 @@
 
 export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
 
+apt-get update
 apt-get -y install python-pip
+apt-get install python-setuptools
 pip install shadowsocks
 mkdir -pv /etc/shadowsocks
 
