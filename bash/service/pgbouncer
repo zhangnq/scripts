@@ -1,0 +1,75 @@
+#!/bin/bash
+#
+# chkconfig: 2345 85 15
+# description: Starts and stops the PgBouncer
+#
+
+export PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin
+
+DAEMON=/usr/local/bin/pgbouncer
+DAEMON_ARGS=/etc/pgbouncer/pgbouncer.ini
+USER=postgres
+GROUP=postgres
+NAME=pgbouncer
+DESC=pgbouncer
+PIDFILE=/var/run/pgbouncer/pgbouncer.pid
+FILELIMITS=65535
+
+#make folder
+if [ ! -d "/var/log/$DESC" ];then
+        mkdir /var/log/$DESC
+        chown $USER:$GROUP /var/log/$DESC
+fi
+if [ ! -d "/var/run/$DESC" ];then
+        mkdir /var/run/$DESC
+        chown $USER:$GROUP /var/run/$DESC
+fi
+
+#command
+case "$1" in
+  start)
+    echo "Starting $DESC... "
+    ulimit -n $FILELIMITS
+    if start-stop-daemon --start --quiet --umask 007 --pidfile $PIDFILE --chuid $USER:$GROUP --exec $DAEMON -- -d $DAEMON_ARGS
+    then
+      echo "Start $NAME successfully."
+    else
+      echo "failed."
+    fi
+    ;;
+
+  stop)
+    echo -n "Stopping $DESC... "
+      if start-stop-daemon --stop --retry 10 --quiet --oknodo --pidfile $PIDFILE --exec $DAEMON
+      then
+        echo "successfully."
+      else
+        echo "failed."
+      fi
+      rm -f $PIDFILE
+      ;;
+
+  reload)
+    echo -n "Reloading $DESC... "
+    ulimit -n $FILELIMITS
+    if start-stop-daemon --stop --signal HUP --quiet --umask 007 --pidfile $PIDFILE --exec $DAEMON
+    then
+      echo "successfully."
+    else
+      echo "failed."
+    fi
+    ;;
+
+  restart)
+    ${0} stop
+    ${0} start
+    ;;
+
+  *)
+    echo "Usage: /etc/init.d/$NAME {start|stop|restart|reload}" >&2
+    exit 1
+    ;;
+
+esac
+
+exit 0
