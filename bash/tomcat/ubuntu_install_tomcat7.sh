@@ -37,8 +37,18 @@ echo "============================tomcat install================================
 
 sleep 5
 
-groupadd tomcat
-useradd -s /bin/bash -g tomcat tomcat
+if grep -q "^tomcat" /etc/group
+  then
+    echo "group tomcat exists"
+  else
+    groupadd tomcat -g 8000
+fi
+if grep -q "^tomcat" /etc/passwd
+  then
+    echo "user tomcat exists"
+  else
+    useradd -s /bin/bash -u 8000 -g tomcat tomcat
+fi
 cd $cur_dir
 
 tar zxvf apache-tomcat-7.0.52.tar.gz
