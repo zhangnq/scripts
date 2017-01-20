@@ -186,12 +186,29 @@ cat >>/usr/local/apache2/conf/httpd.conf <<EOF
 Include conf/conf.d/
 EOF
 
-echo "============================start================================="
-
+echo "============================logrotate================================="
 sleep 5
+rm -rf /etc/logrotate.d/apache2
+cat >>/etc/logrotate.d/apache2 <<EOF
+/var/log/apache2/* {
+        daily
+        rotate 30
+        compress
+        delaycompress
+        missingok
+        notifempty
+        create 644 www www
+        sharedscripts
+        postrotate
+                /etc/init.d/apache2 restart >/dev/null
+        endscript
+}
+EOF
 
+echo "============================start================================="
+sleep 5
 /etc/init.d/apache2 start
 
+echo "============================end================================="
 sleep 5
-
 ps -ef|grep apache
