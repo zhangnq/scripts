@@ -92,6 +92,7 @@ sleep 5
 sed -i '/# OS specific support.*/a\JAVA_HOME="/usr/lib/jvm/jdk1.7.0_45"\nJAVA_OPTS="-server -Xms800M -Xmx1024M -XX:MaxPermSize=512M -Dfile.encoding=utf-8"' /usr/local/$project/bin/catalina.sh
 sed -i '/<Connector port="8080" protocol=.*/a\\t\tURIEncoding="UTF-8"' /usr/local/$project/conf/server.xml
 sed -i 's/<Connector port="8009" protocol="AJP\/1\.3"/& URIEncoding="UTF-8"/' /usr/local/$project/conf/server.xml
+sed -i 's/<Server port="8005" shutdown="SHUTDOWN">/<Server port="-1" shutdown="SHUTDOWN">/g' /usr/local/$project/conf/server.xml
 mv /usr/local/$project/conf/tomcat-users.xml /usr/local/$project/conf/tomcat-users.xml.bak
 cat > /usr/local/$project/conf/tomcat-users.xml<<EOF
 <?xml version='1.0' encoding='utf-8'?>
@@ -104,6 +105,8 @@ cat > /usr/local/$project/conf/tomcat-users.xml<<EOF
   <user username="tomcat" password="tomcat" roles="tomcat,manager-gui,manager-script,manager-status,manager-jmx"/>
 </tomcat-users>
 EOF
+
+rm -rf /usr/local/$project/webapps/*
 
 wget https://raw.githubusercontent.com/zhangnq/scripts/master/bash/service/tomcat7 -O /etc/init.d/$project
 
