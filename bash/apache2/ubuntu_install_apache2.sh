@@ -190,9 +190,9 @@ echo "============================logrotate================================="
 sleep 5
 rm -rf /etc/logrotate.d/apache2
 cat >>/etc/logrotate.d/apache2 <<EOF
-/var/log/apache2/* {
+/var/log/apache2/*_log {
         daily
-        rotate 30
+        rotate 12
         compress
         delaycompress
         missingok
