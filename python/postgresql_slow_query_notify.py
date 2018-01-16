@@ -110,14 +110,19 @@ def main():
     results=get_slow_query(pg_log_path)
     for key,val in results.items():
         remove_similar(val, similarity=0.9)
+        try:
+            val.remove('COMMIT')
+        except:
+            pass
     msg=''
     for key,val in results.items():
-        msg=msg + '<b>DATABASE:</b> %s <br/>\n' % key
-        i=1
-        for r in val:
-            msg=msg + str(i) + '、 ' + r + ' ; <br/>\n'
-            i+=1
-        msg=msg + '<br/>\n'
+        if len(val) != 0:
+            msg=msg + '<b>DATABASE:</b> %s <br/>\n' % key
+            i=1
+            for r in val:
+                msg=msg + str(i) + '、 ' + r + ' ; <br/>\n'
+                i+=1
+            msg=msg + '<br/>\n'
 
     #send email
     if len(msg) != 0:
