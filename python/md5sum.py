@@ -1,4 +1,7 @@
 #coding: utf-8
+#Blog: https://zhangnq.com/3125.html
+#Windows md5sum下载
+#链接: https://pan.baidu.com/s/1gq_d-tI-J3ybN6JZ439anw，提取码: 26rk
 
 import os
 import hashlib
