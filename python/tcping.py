@@ -88,12 +88,19 @@ tcping for linux by zhangnq
 Please see http://tool.sijitao.net/software/tcping for more introductions.
 --------------------------------------------------------------------------'''
     
-    parser=MyParser(description=desc, formatter_class=RawTextHelpFormatter)
+    example_text = '''examples:
+    tcping zhangnq.com
+    tcping 114.114.114.114 -t -p 53
+    tcping zhangnq.com -n 10 -p 443 -i 5 -w 1'''
+    
+    parser=MyParser(description=desc, formatter_class=RawTextHelpFormatter, epilog=example_text)
     parser.add_argument("destination", type=str, help="a DNS name, an IP address")
-    parser.add_argument("-p", dest="port", type=int, default=80, help="a numeric TCP port, 1-65535.  If not specified, defaults to 80.")
-    parser.add_argument("-t", dest="is_continuously", action='store_true', help="ping continuously until stopped via control-c")
-    parser.add_argument("-n", dest="number", type=int, default=4, help="send count pings and then stop.  Default 4.")
-    parser.add_argument("-v", "--version", action='version', version=VERSION,  help="print version and exit")
+    parser.add_argument("-p", dest="port", type=int, default=80, help="a numeric TCP port, 1-65535. If not specified, defaults to 80.")
+    parser.add_argument("-t", dest="is_continuously", action='store_true', help="ping continuously until stopped via control-c.")
+    parser.add_argument("-n", dest="number", type=int, default=4, help="send count pings and then stop, default 4.")
+    parser.add_argument("-i", dest="interval", type=int, default=1, help="wait seconds between pings, default 1.")
+    parser.add_argument("-w", dest="wait", type=int, default=2, help="wait seconds for a response, default 2.")
+    parser.add_argument("-v", "--version", action='version', version=VERSION,  help="print version and exit.")
     args=parser.parse_args()
     
     ip = host2ip(args.destination)
@@ -109,23 +116,23 @@ Please see http://tool.sijitao.net/software/tcping for more introductions.
             print("** Pinging continuously.  Press control-c to stop **")
             print("")
             while True:
-                results = tcp(ip, port, TIMEOUT)
+                results = tcp(ip, port, args.wait)
                 # print format result
                 print(format_tcp_result(results))
                 # start statistic
                 statistic_tcp_result(results)
                 
-                time.sleep(1)
+                time.sleep(args.interval)
         else:
             print("")
             for i in range(args.number):
-                results = tcp(ip, port, TIMEOUT)
+                results = tcp(ip, port, args.wait)
                 # print format result
                 print(format_tcp_result(results))
                 # start statistic
                 statistic_tcp_result(results)
                 
-                time.sleep(1)
+                time.sleep(args.interval)
     except KeyboardInterrupt:
         print("Control-C")
     finally:
