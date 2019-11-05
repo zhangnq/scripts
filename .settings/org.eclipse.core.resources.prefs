@@ -1,3 +1,8 @@
 eclipse.preferences.version=1
 encoding//python/dnspod4ddns.py=utf-8
+encoding//python/hostloc/hostloc.py=utf-8
 encoding//python/md5sum.py=utf-8
+encoding//python/nbhao/haproxy_ss.py=utf-8
+encoding//python/postgresql_slow_query_notify.py=utf-8
+encoding//python/urlOpenWithReferer.py=utf-8
+encoding//python/urlopen_time.py=utf-8
