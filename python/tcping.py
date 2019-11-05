@@ -9,7 +9,6 @@ import argparse
 from argparse import RawTextHelpFormatter
 
 VERSION = '1.0.1'
-TIMEOUT = 2
 
 ping_cnt = 0
 ping_success_cnt = 0
@@ -91,7 +90,8 @@ Please see http://tool.sijitao.net/software/tcping for more introductions.
     example_text = '''examples:
     tcping zhangnq.com
     tcping 114.114.114.114 -t -p 53
-    tcping zhangnq.com -n 10 -p 443 -i 5 -w 1'''
+    tcping zhangnq.com -n 10 -p 443 -i 5 -w 1
+'''
     
     parser=MyParser(description=desc, formatter_class=RawTextHelpFormatter, epilog=example_text)
     parser.add_argument("destination", type=str, help="a DNS name, an IP address")
