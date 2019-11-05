@@ -91,6 +91,7 @@ Please see http://tool.sijitao.net/software/tcping for more introductions.
     tcping zhangnq.com
     tcping 114.114.114.114 -t -p 53
     tcping zhangnq.com -n 10 -p 443 -i 5 -w 1
+    \n
 '''
     
     parser=MyParser(description=desc, formatter_class=RawTextHelpFormatter, epilog=example_text)
