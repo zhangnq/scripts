@@ -2,7 +2,7 @@
 
 export PATH=/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin
 
-URL=http://www.chekiang.info/scan/html/zhangnq_sshbl_deny.tar.gz
+URL=https://www.nbhao.org/scan/html/zhangnq_sshbl_deny.tar.gz
 HOSTSDENY=/etc/hosts.deny
 TMP_DIR=/dev/shm
 FILE=hosts.deny
