@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # @Author: zhangnq
-# @Blog: https://zhangnq.com/
-# @Tool: http://tool.sijitao.net/software/tcping
+# @Blog: https://www.szl724.com/
+# @Tool: https://tool.nbqykj.cn/software/tcping
 
 import socket,sys
 import time
